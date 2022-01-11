@@ -2,7 +2,7 @@ import React from 'react';
 import PostDetails from './PostDetails';
 import PostFrom from './PostFrom';
 
-class Posts extends React.Component {
+export class Posts extends React.Component {
     //data
     constructor() {
         super();
@@ -111,5 +111,3 @@ class Posts extends React.Component {
         
     }
 }// posts
-
-export default Posts;
