@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import {getUser} from '../services/UsersAPI';
+
 
 export class Login extends Component {
   constructor() {
@@ -20,21 +22,28 @@ export class Login extends Component {
     }
     // console.log(fieldName, fieldValue);
     this.setState({ [fieldName]: fieldValue });
-
-    //clearing fields
-    this.setState({
-        email: "",
-        password: "",
-        rememberme: false,
-      });
   };
 
+  
   // handle form submit
   handleFormSubmit = (event) => {
     // prevent default event submit
     event.preventDefault();
-    
-    console.log(this.state);
+    // login logic
+    getUser(this.state.email).then(user =>{
+      console.log(user);
+      console.log(user[0].password);
+      console.log(this.state.password);
+      if(user[0].password===this.state.password){
+        window.location = '/posts'
+      } else {
+        console.log("Failed to login, Invalid Password");
+      }
+    }).catch(error=>{
+      console.log(error);
+      console.log("Failed to login, user not found!");
+    })
+
   }
 
   render() {
