@@ -5,13 +5,21 @@ export default class PostFrom extends Component {
         super();
         // this.handleChange = this.handleChange.bind(this);        
         this.state = {
+            id:"",
             title: "",
             body: "",
             author: "",
             category: "",
         };
     }
-  // define state
+  
+    // after update in component
+    componentDidUpdate(prevProps) {
+      // console.log(this.props.post);
+      if(this.props.post != null && this.props.post !== prevProps.post ) {
+        this.setState(this.props.post);
+      }
+    }
   
 
   // Events Field Change Handlers
@@ -41,6 +49,7 @@ export default class PostFrom extends Component {
     this.props.onNewPost(this.state);
     //clearing fields
     this.setState({
+      id: "",
       title: "",
       body: "",
       author: "",
@@ -55,8 +64,8 @@ export default class PostFrom extends Component {
         <div className="car bg-light">
           <div className="card-body">
             <form onSubmit={this.handleFormSubmit}>
-              <div class="form-group">
-                <label for="title">Post Title</label>
+              <div className="form-group">
+                <label htmlFor="title">Post Title</label>
                 <input
                   type="text"
                   className="form-control"
@@ -65,8 +74,8 @@ export default class PostFrom extends Component {
                   onChange={this.handleChange}
                 />
               </div>
-              <div class="form-group">
-                <label for="body">Body</label>
+              <div className="form-group">
+                <label htmlFor="body">Body</label>
                 <input
                   type="text"
                   className="form-control"
@@ -75,8 +84,8 @@ export default class PostFrom extends Component {
                   onChange={this.handleChange}
                 />
               </div>
-              <div class="form-group">
-                <label for="author">Author</label>
+              <div className="form-group">
+                <label htmlFor="author">Author</label>
                 <input
                   type="text"
                   className="form-control"
@@ -85,8 +94,8 @@ export default class PostFrom extends Component {
                   onChange={this.handleChange}
                 />
               </div>
-              <div class="form-group">
-                <label for="author">Selecty category</label>
+              <div className="form-group">
+                <label htmlFor="author">Selecty category</label>
                 <select
                   className="form-control"
                   id="category"

@@ -1,40 +1,61 @@
 import React from 'react';
 import PostDetails from './PostDetails';
 import PostFrom from './PostFrom';
+import { getPosts, addPost, deletePost, updatePost} from '../services/PostsAPI';
+import { getCategories } from '../services/CategoriesAPI';
 
 export class Posts extends React.Component {
     //data
     constructor() {
         super();
         this.state = {
-            categories:[
-                { code:'react' , name:'React'},
-                { code:'redux' , name:'Redux'},
-                { code:'angular' , name:'Angular'},
-                { code:'jsx' , name:'JSX'}
-            ],
-            posts:[
-                {
-                    id:1, title :'Introduction to React js',
-                    body: 'This post provides an introduction to react',
-                    author :'Harry' , category:'react'
-                }, {
-                    id:2, title :'Advance to React js',
-                    body: 'This post provides an advance to react features',
-                    author :'Marry' , category:'react'
-                } , {
-                    id:3, title :'Introduction to Redux',
-                    body: 'This post provides an introduction to react',
-                    author :'Jane' , category:'redux'
-                }
-            ],
+            categories:[],
+            post :{ id: "" , author: "", body: "", category: "" , title: "" },
+            posts:[],
             filterPosts : [],
             isFiltered : false
-        }
-        
+        }        
     }
 
-    
+    // component lifecycle methods
+    componentDidMount() { 
+        // load all blog post data
+        getPosts().then( postsObjs =>{
+            // console.log("Blogs Post data", postsObjs);
+            this.setState({ posts : postsObjs});
+        }).catch(error=>{
+            console.log("Failed to load blogs posts data.");
+        });
+
+        //load all categories
+        getCategories().then(resposnse=>{
+            // console.log("Blogs Categories ",resposnse);
+            this.setState({ categories : resposnse});
+        }).catch(error=>{
+            console.log("Failed to load blogs categories data.");
+        });
+    }
+
+    // handle delete blog post
+    handleDelete= (id) => {
+        // console.log(id);
+        deletePost(id).then(response=>{
+            this.setState((prevState)=>{
+                const filteredPost = prevState.posts.filter(post=>{
+                    return post.id != id;
+                });
+                return { posts : filteredPost };
+            });
+        }).catch(error=>{
+            console.log("Failed to delete a post data.");
+        });
+    }
+
+    // handle update
+    handleUpdate = (post) => {
+       // console.log("update blpg post ",post);
+       this.setState({post : post });
+    }
 
     // logic & template
     renderPost() {
@@ -47,23 +68,49 @@ export class Posts extends React.Component {
                 <h3>All about posts</h3>
                 {
                     this.state.filterPosts.map((post)=>
-                        <PostDetails key={post.id} post={post}  />
+                        <PostDetails key={post.id} post={post}  onDelete={this.handleDelete} onUpdate={this.handleUpdate}/>
                     )
                 }
             </div>
         )
     }
-
+    // hanle post for update or create 
+    hadlePost = (post)=>{
+        if(post.id !== undefined && post.id !=="" && post.id !=null) {
+            this.handleUpdatePost(post);
+        } else{
+            this.hadleNewPost(post);
+        }
+    }
     // hadleNewPost
     hadleNewPost =(post) =>{
-        // console.log(post);
-        this.setState((prevState)=>{
-            const id = (prevState.posts.length ===0) ? 1 : prevState.posts[prevState.posts.length-1].id+1;
-            // update id in the 
-            post = {...post, id:id};
-            return { posts : [...prevState.posts, post]}
+        delete post.id;
+        addPost(post).then(newPost=>{
+            console.log(newPost);
+            this.setState((prevState)=>{
+                return { posts : [...prevState.posts, newPost] }
+            })
+        }).catch(error=>{
+            console.log("Failed to create post data.");
         });
     }
+    // handle Update Post
+    handleUpdatePost =(post)=>{
+        updatePost(post).then(updatePost =>{
+            console.log(updatePost);
+            // reflect in ui
+            this.setState((prevState)=>{
+                let updatedList = prevState.posts.map(pst=>{
+                    if(pst.id === updatePost.id)
+                        return updatePost;
+                    else 
+                        return pst;                    
+                });
+                return { posts : [...updatedList ]}
+            });
+        });
+    }
+
 
     // Events Handlers
     handleFilterCategoryChange(event) {
@@ -82,7 +129,7 @@ export class Posts extends React.Component {
     // render create post form
     renderForm() {
         return (
-               <PostFrom categories={this.state.categories}  onNewPost={this.hadleNewPost} />
+               <PostFrom categories={this.state.categories}  onNewPost={this.hadlePost}  post={this.state.post} />
         )
     }
 
