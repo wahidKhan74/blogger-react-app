@@ -1,7 +1,18 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { loggedIn} from '../actions';
 
 export default function Navbar (props) {
+    const isLogged = useSelector(state=> state.isLogged);
+    // console.log(isLogged);
+    const dispatch = useDispatch();
+    let navItem = (isLogged) ? (
+                <NavLink className="nav-link" to="/logout"  onClick={ ()=> { dispatch(loggedIn()) }} >Logout</NavLink>
+             ) :
+             (
+                <NavLink className="nav-link" to="/login">Login</NavLink>
+            )
     return (        
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <a className="navbar-brand" href="#">Bolgger App</a>
@@ -24,14 +35,7 @@ export default function Navbar (props) {
                     <NavLink className="nav-link" to="/users">Users</NavLink>
                 </li>
                 <li className="nav-item">
-                    {
-                     (props.isLoggedIn=='true') ? (
-                            <NavLink className="nav-link" to="/logout">Logout</NavLink>
-                        ) :
-                        (
-                            <NavLink className="nav-link" to="/login">Login</NavLink>
-                        )
-                    }
+                    {  navItem  }
                 </li>
                 <li className="nav-item">
                     <NavLink className="nav-link" to="/register">Register</NavLink>
