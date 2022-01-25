@@ -1,7 +1,9 @@
 import * as PostAPI from '../services/PostsAPI';
+import * as CatAPI from '../services/CategoriesAPI';
 
-// ACTION
+// action creator function
 export const increament = (data) => {
+  // action
   return {
     type: "INCREMENT",
     payload: data,
@@ -23,7 +25,7 @@ export const loggedIn = () => {
     };
 };
 
-// posts action
+// posts action creator function
 export const getPosts = () => {
   return dispatch => {
     PostAPI.getPosts().then(posts => {
@@ -38,3 +40,17 @@ export const getPosts = () => {
   } 
 };
   
+// category action creator function
+export const getCategories = () => {
+  return dispatch => {
+    CatAPI.getCategories().then(categories => {
+      dispatch({
+        type: "GET_CATEGORIES",
+        payload: categories,
+      });
+    }).catch(error=>{
+      console.log("Get categories failed.");
+      console.log("Error : ", error);
+    });
+  } 
+};

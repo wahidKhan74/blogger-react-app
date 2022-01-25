@@ -1,10 +1,11 @@
 import React from 'react';
 import PostDetails from './PostDetails';
 import PostFrom from './PostFrom';
-import { getPosts, addPost, deletePost, updatePost} from '../services/PostsAPI';
-import { getCategories } from '../services/CategoriesAPI';
+import { addPost, deletePost, updatePost} from '../services/PostsAPI';
+import { getPosts , getCategories} from '../actions';
+import { connect } from 'react-redux';
 
-export class Posts extends React.Component {
+class Posts extends React.Component {
     //data
     constructor() {
         super();
@@ -19,21 +20,10 @@ export class Posts extends React.Component {
 
     // component lifecycle methods
     componentDidMount() { 
-        // load all blog post data
-        getPosts().then( postsObjs =>{
-            // console.log("Blogs Post data", postsObjs);
-            this.setState({ posts : postsObjs});
-        }).catch(error=>{
-            console.log("Failed to load blogs posts data.");
-        });
-
-        //load all categories
-        getCategories().then(resposnse=>{
-            // console.log("Blogs Categories ",resposnse);
-            this.setState({ categories : resposnse});
-        }).catch(error=>{
-            console.log("Failed to load blogs categories data.");
-        });
+        // load all blog post data from state store
+        this.props.getPosts();
+         //load all categories from state store
+        this.props.getCategories();
     }
 
     // handle delete blog post
@@ -67,7 +57,7 @@ export class Posts extends React.Component {
             <div className='col-sm-8'>
                 <h3>All about posts</h3>
                 {
-                    this.state.filterPosts.map((post)=>
+                    this.props.posts.map((post)=>
                         <PostDetails key={post.id} post={post}  onDelete={this.handleDelete} onUpdate={this.handleUpdate}/>
                     )
                 }
@@ -129,7 +119,7 @@ export class Posts extends React.Component {
     // render create post form
     renderForm() {
         return (
-               <PostFrom categories={this.state.categories}  onNewPost={this.hadlePost}  post={this.state.post} />
+               <PostFrom categories={this.props.categories}  onNewPost={this.hadlePost}  post={this.state.post} />
         )
     }
 
@@ -158,3 +148,12 @@ export class Posts extends React.Component {
         
     }
 }// posts
+
+const mapStateToProps = (state) => {
+    // console.log(state);
+    return  {
+        posts : state.posts,
+        categories : state.categories,
+    }
+}
+export default connect(mapStateToProps, { getPosts, getCategories } ) (Posts);

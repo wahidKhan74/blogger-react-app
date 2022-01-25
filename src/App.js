@@ -4,7 +4,7 @@ import AuthorDetails from './components/AuthorDetails';
 import Header from './components/Header';
 import { Home } from './components/Home';
 import Navbar from './components/Navbar';
-import { Posts } from './components/Posts';
+import Posts from './components/Posts';
 import { Users } from './components/Users';
 import { Register } from './components/Register';
 import { Login } from './components/Login';
